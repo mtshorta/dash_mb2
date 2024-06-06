@@ -111,7 +111,7 @@ if Arquivo:
     df_setores = df_setores.rename(columns = {'SETOR': 'EM ATEDIMENTO'})
     df_setores = df_setores.sort_values('EM ATEDIMENTO', ascending = False)
     df_setores2 = df_setores.reset_index()
-    df_setores2 = df_setores2.reset_index(drop=True)
+    df_setores2.reset_index(drop=True)
     col1, col2 = st.columns([1,1])
     col1.dataframe(df_setores2)
     col2.bar_chart(df_setores)
