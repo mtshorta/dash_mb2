@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import streamlit as st
 
 
-st.set_page_config(page_title='Dashboard de Atendimento')
+st.set_page_config(page_title='Dashboard de Atendimento', layoyt='wide')
 Arquivo = st.file_uploader(label = 'Faça o Upload do Relatório de Atendimentos Maxbot. O relatório pode ser obtido acessando sua conta maxbot, no menu lateral clique em "Relatório", em seguida "Atendimento". Selecione o período de referência e gere o relatório')
 st.title('Dashboard Análise de Atendimentos Maxbot 🤖')
 
