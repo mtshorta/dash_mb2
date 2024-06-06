@@ -120,18 +120,20 @@ if Arquivo:
     #
     #
     #
-    #Aquui se inicia os protocolos em atendimento por atendete.
+    #Aqui se inicia os protocolos em atendimento por atendete.
     st.subheader('Protocolos em atendimento por atendente')
     df_atendentes = df_Em_Atendimento.groupby(['ATENDENTE'], observed=False)['ATENDENTE'].count()
     df_atendentes = df_atendentes.to_frame()
     df_atendentes = df_atendentes.rename(columns = {'ATENDENTE': 'EM ATEDIMENTO'})
     df_atendentes = df_atendentes.sort_values('EM ATEDIMENTO', ascending = False)
+    df_atendentes2 = df_atendentes.reset_index()
     col1, col2 = st.columns([1,1])
-    col1.dataframe(df_atendentes, column_config={
+    col1.dataframe(df_atendentes2, hide_index=True, column_config={
         'ATENDENTE' : st.column_config.Column(width="small")
     })#.style.set_properties(**{'width': '100px'}, subset=['ATENDENTE'])
                                 #.set_properties(**{'width': '200px'}, subset=['EM ATENDIMENTO']))
     col2.bar_chart(df_atendentes)
+
 
 
     # 
