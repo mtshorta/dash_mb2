@@ -270,8 +270,8 @@ if Arquivo:
     #df_by_setor.index_name = 'Protocolos Abertos' ISSO AQUI PODE DELETAR QUE NÃO FUNCIONOU
 
     df_setores = df_by_setor.to_frame()
-    df_setores = df_setores.rename(columns = {'SETOR': 'EM ATEDIMENTO'})
-    df_setores = df_setores.sort_values('EM ATEDIMENTO', ascending = False)
+    df_setores = df_setores.rename(columns = {'SETOR': 'EM ATENDIMENTO'})
+    df_setores = df_setores.sort_values('EM ATENDIMENTO', ascending = False)
     df_setores2 = df_setores.reset_index()
     col1, col2 = st.columns([1,1])
     col1.dataframe(df_setores2, hide_index=True)
@@ -286,15 +286,16 @@ if Arquivo:
     st.subheader('Protocolos em atendimento por atendente')
     df_atendentes = df_Em_Atendimento.groupby(['ATENDENTE'], observed=False)['ATENDENTE'].count()
     df_atendentes = df_atendentes.to_frame()
-    df_atendentes = df_atendentes.rename(columns = {'ATENDENTE': 'EM ATEDIMENTO'})
-    df_atendentes = df_atendentes.sort_values('EM ATEDIMENTO', ascending = False)
-    df_atendentes2 = df_atendentes.reset_index()
+    df_atendentes = df_atendentes.rename(columns = {'ATENDENTE': 'EM ATENDIMENTO'})
+    df_atendentes = df_atendentes.sort_values('EM ATENDIMENTO', ascending = False)
+    #df_atendentes2 = df_atendentes.reset_index()
+    df_atendentes2 = df_atendentes[df_atendentes['EM ATENDIMENTO'] > 0]
     col1, col2 = st.columns([1,1])
     col1.dataframe(df_atendentes2, hide_index=True, column_config={
         'ATENDENTE' : st.column_config.Column(width="small")
     })#.style.set_properties(**{'width': '100px'}, subset=['ATENDENTE'])
                                 #.set_properties(**{'width': '200px'}, subset=['EM ATENDIMENTO']))
-    col2.bar_chart(df_atendentes)
+    col2.bar_chart(df_atendentes2)
 
 
 
