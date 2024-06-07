@@ -282,7 +282,7 @@ if Arquivo:
     #
     #
     #
-    #Aqui se inicia os protocolos em atendimento por atendete.
+    #Aquui se inicia os protocolos em atendimento por atendete.
     st.subheader('Protocolos em atendimento por atendente')
     df_atendentes = df_Em_Atendimento.groupby(['ATENDENTE'], observed=False)['ATENDENTE'].count()
     df_atendentes = df_atendentes.to_frame()
@@ -313,8 +313,47 @@ if Arquivo:
 
 
 
+
+
+
+    # 
+    #
+    #
+    # # Aqui se inicia a curva de atendimento
+    list_setor = list(df['SETOR'].value_counts().index.categories)
     
 
+    #Menu de opções
+    options = st.multiselect(
+    "Selecione os setores para comparar com os valores gerais",
+    list_setor,
+    list_setor)
 
+
+    col1, col2 = st.columns(2)
+    df_analitic = df
+    df_analitic['ABERTURA'] = pd.to_datetime(df_analitic['ABERTURA'])
+    df_analitic['HOUR'] = df_analitic['ABERTURA'].dt.hour
+    hour_counts = df_analitic['HOUR'].value_counts().sort_index()
+    col1.write('Curva de atendimento geral')
+
+    # Create a DataFrame with all hours of the day (0 to 23)
+    all_hours = pd.DataFrame({'HOUR': range(24)})
+    # Merge the DataFrames to ensure all hours are included
+    hour_counts_merged = pd.merge(all_hours, hour_counts, on='HOUR', how='left').fillna(0)
+    col1.bar_chart(hour_counts_merged.set_index('HOUR')) 
+
+  
     
 
+    df_analitic2 = df[df['SETOR'].isin(options)]
+    df_analitic2['ABERTURA'] = pd.to_datetime(df_analitic['ABERTURA'])
+    df_analitic2['HOUR'] = df_analitic2['ABERTURA'].dt.hour
+    hour_counts2 = df_analitic2['HOUR'].value_counts().sort_index()
+    col2.write('Curva de atendimento por setor')
+
+    # Merge the DataFrames to ensure all hours are included
+    hour_counts_merged2 = pd.merge(all_hours, hour_counts2, on='HOUR', how='left').fillna(0)
+    col2.bar_chart(hour_counts_merged2.set_index('HOUR')) 
+    #Ploting results
+    # 
