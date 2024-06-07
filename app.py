@@ -288,15 +288,15 @@ if Arquivo:
     df_atendentes = df_atendentes.to_frame()
     df_atendentes = df_atendentes.rename(columns = {'ATENDENTE': 'EM ATENDIMENTO'})
     df_atendentes = df_atendentes.sort_values('EM ATENDIMENTO', ascending = False)
+    #df_atendentes2 = df_atendentes.reset_index()
+    df_atendentes = df_atendentes[df_atendentes['EM ATENDIMENTO'] > 0]
     df_atendentes2 = df_atendentes.reset_index()
-    df_atendentes2 = df_atendentes[df_atendentes['EM ATENDIMENTO'] > 0]
     col1, col2 = st.columns([1,1])
     col1.dataframe(df_atendentes2, hide_index=True, column_config={
         'ATENDENTE' : st.column_config.Column(width="small")
     })#.style.set_properties(**{'width': '100px'}, subset=['ATENDENTE'])
                                 #.set_properties(**{'width': '200px'}, subset=['EM ATENDIMENTO']))
-    col2.bar_chart(df_atendentes2)
-
+    col2.bar_chart(df_atendentes)
 
 
 
