@@ -321,6 +321,7 @@ if Arquivo:
     #
     #
     # # Aqui se inicia a curva de atendimento
+    st.header('Curva de atendimento por hora')
     list_setor = list(df['SETOR'].value_counts().index.categories)
     
 
