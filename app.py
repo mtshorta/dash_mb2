@@ -202,26 +202,23 @@ if Arquivo:
     # minutes = media_format.components.minutes
     # seconds = media_format.components.seconds
     # formatted_time = f'{hours}h{minutes}m{seconds}s'
-    def check_fila_hoje():
-        if protocolos_hoje == True:
-            media = df_hoje['TEMPO DE FILA'].mean()
-            media_format = pd.Timedelta(media)
-            hours = media_format.components.hours
-            minutes = media_format.components.minutes
-            seconds = media_format.components.seconds
-            formatted_time = f'{hours}h{minutes}m{seconds}s'
-            return formatted_time
-        else:
-            return 0
         
-    media_tempo_fila_hoje=df_hoje['TEMPO DE FILA'].mean()
-    media_format = pd.Timedelta(media_tempo_fila_hoje)
-    hours = media_format.components.hours
-    minutes = media_format.components.minutes
-    seconds = media_format.components.seconds
-    formatted_tempo_fila_hoje = f'{hours}h{minutes}m{seconds}s'
+    media=df_hoje['TEMPO DE FILA'].mean()
+    if pd.isna(media):
+        hours = 0
+        minutes = 0
+        seconds = 0
+    else:
+        # Convert mean to Timedelta if it is not NaT
+        media_format = pd.Timedelta(media)
+        hours = media_format.components.hours
+        minutes = media_format.components.minutes
+        seconds = media_format.components.seconds
 
-    col3.metric("Tempo médio de fila hoje", formatted_tempo_fila_hoje, 'Iniciados hoje', delta_color='off')
+    formatted_time = f'{hours}:{minutes}:{seconds}'
+    
+
+    col3.metric("Tempo médio de fila hoje", formatted_time, 'Iniciados hoje', delta_color='off')
 
     #
     #
