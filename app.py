@@ -93,7 +93,7 @@ if Arquivo:
 
     min = df_fechamento['DATA'].min().date()
     max = df_fechamento['DATA'].max().date()
-    print(min, max)
+    #print(min, max)
 
     #Aqui eu crio um dataframe com todas as datas entre o mínimo e o máximo que é o df_openings
     date_range = pd.date_range(start=min, end=max)
@@ -101,32 +101,32 @@ if Arquivo:
 
     #Aqui, eu crio um df com o daterange acima, e nomeio as colunas como Date
     df_openings = pd.DataFrame(date_range, columns=['Date'])
-    print('este é o df openings')
-    print(df_openings)
+    #print('este é o df openings')
+    #print(df_openings)
 
     #Aqui eu faço o date_counts, que é um DF que conta as datas de abertura, o resultado final é um df com Date e Count dessa respectiva data
     date_counts = df_fechamento['DATA'].value_counts().reset_index()
     date_counts.columns = ['Date', 'Count']
-    print('Este é o date counts')
-    print(date_counts)
+    #print('Este é o date counts')
+    #print(date_counts)
 
 
-    print('Este é o df_openings ANTES do merge')
-    print(df_openings)
+    #print('Este é o df_openings ANTES do merge')
+    #print(df_openings)
     # Merge the counts into df_openings. Eu preciso fazer isso pois o date_counts pode ter datas vazias
     df_openings = df_openings.merge(date_counts, on='Date', how='left')
     # Fill NaN values with 0
     df_openings['Count'] = df_openings['Count'].fillna(0).astype(int)
-    print('Este é o df_openings DEPOIS do merge')
-    print(df_openings)
+    #print('Este é o df_openings DEPOIS do merge')
+    #print(df_openings)
 
 
     # Rename the 'Count' column to 'abertura'
     df_openings = df_openings.rename(columns={'Count': 'aberturas'})
 
     # Display the DataFrame
-    print('Esse é o df openings depois do rename aberturas: ')
-    print(df_openings)
+    #print('Esse é o df openings depois do rename aberturas: ')
+    #print(df_openings)
 
     #
     #
@@ -147,7 +147,7 @@ if Arquivo:
     df_openings = df_openings.rename(columns={'Count': 'fechamentos'})
     df_openings['fechamentos'] = df_openings['fechamentos'].fillna(0).astype(int)
     df_openings['DateOnly'] = df_openings['Date'].dt.date
-    print(df_openings)
+    #print(df_openings)
 
     #
     #
