@@ -8,7 +8,14 @@ import streamlit as st
 
 
 st.set_page_config(page_title='Dashboard de Atendimento')
+
+#
+#
+#
+#Upload do arquivo
 Arquivo = st.file_uploader(label = 'Faça o Upload do Relatório de Atendimentos Maxbot. O relatório pode ser obtido acessando sua conta maxbot, no menu lateral clique em "Relatório", em seguida "Atendimento". Selecione o período de referência e gere o relatório')
+#Arquivo = 'Protocolos2024-06-07.xlsx'
+
 st.title('Dashboard Análise de Atendimentos Maxbot 🤖')
 
 #Reading exported report
@@ -53,7 +60,116 @@ if Arquivo:
     df['TEMPO DE FILA'] = pd.to_timedelta(df['TEMPO DE FILA'], errors = 'coerce')
     df['DURAÇÃO H:M:S'] = pd.to_timedelta(df['DURAÇÃO H:M:S'], errors = 'coerce')
 
+        #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #AQUI MEU AMIGO, um malabarismo imenso para conseguir fazer o gráfico de aberturas e fechamentos
+    #Pego o a menor e maior data do df_fechamento, que nada mais é que o df normal mais uma coluna de data de fechamento 
+    # E outra coluna de data e hora de fechamento dos protocolos
+    #Criando a data de fechamento
+    st.subheader('Número de protocolos abertos e fechados no período')
+    df_fechamento = df
+    #
+    #Calculando a data do fechamento
+    def calculate_data_fechamento(row):
+        if row['SITUAÇÃO'] == 'Encerrado':
+            return row['ABERTURA'] + row['DURAÇÃO H:M:S']
+        else:
+            return pd.NaT
 
+    # Apply the function to create 'DATA FECHAMENTO' column
+    df_fechamento['DATA E HORA FECHAMENTO'] = df.apply(calculate_data_fechamento, axis=1)
+    df_fechamento['DATA FECHAMENTO']= df['DATA E HORA FECHAMENTO'].apply(lambda x: x.date() if pd.notnull(x) else x)
+
+    # Display the DataFrame
+    #df_fechamento
+
+
+    min = df_fechamento['DATA'].min().date()
+    max = df_fechamento['DATA'].max().date()
+    print(min, max)
+
+    #Aqui eu crio um dataframe com todas as datas entre o mínimo e o máximo que é o df_openings
+    date_range = pd.date_range(start=min, end=max)
+
+
+    #Aqui, eu crio um df com o daterange acima, e nomeio as colunas como Date
+    df_openings = pd.DataFrame(date_range, columns=['Date'])
+    print('este é o df openings')
+    print(df_openings)
+
+    #Aqui eu faço o date_counts, que é um DF que conta as datas de abertura, o resultado final é um df com Date e Count dessa respectiva data
+    date_counts = df_fechamento['DATA'].value_counts().reset_index()
+    date_counts.columns = ['Date', 'Count']
+    print('Este é o date counts')
+    print(date_counts)
+
+
+    print('Este é o df_openings ANTES do merge')
+    print(df_openings)
+    # Merge the counts into df_openings. Eu preciso fazer isso pois o date_counts pode ter datas vazias
+    df_openings = df_openings.merge(date_counts, on='Date', how='left')
+    # Fill NaN values with 0
+    df_openings['Count'] = df_openings['Count'].fillna(0).astype(int)
+    print('Este é o df_openings DEPOIS do merge')
+    print(df_openings)
+
+
+    # Rename the 'Count' column to 'abertura'
+    df_openings = df_openings.rename(columns={'Count': 'aberturas'})
+
+    # Display the DataFrame
+    print('Esse é o df openings depois do rename aberturas: ')
+    print(df_openings)
+
+    #
+    #
+    #Segunda parte do code para encontrar os fechamentos por dia
+
+    #Aqui eu faço o date_counts, que é um DF que conta as datas de abertura, o resultado final é um df com Date e Count dessa respectiva data
+    date_counts2 = df_fechamento['DATA FECHAMENTO'].value_counts().reset_index()
+    #print(date_counts2)
+    date_counts2.columns = ['Date', 'Count']
+    #print(date_counts2)
+
+    #converting to date
+    date_counts2['Date'] = pd.to_datetime(date_counts2['Date'])
+    #print(df_openings)
+    # Merge the counts into df_openings. Eu preciso fazer isso pois o date_counts pode ter datas vazias
+    df_openings = df_openings.merge(date_counts2, on='Date', how='left')
+
+    df_openings = df_openings.rename(columns={'Count': 'fechamentos'})
+    df_openings['fechamentos'] = df_openings['fechamentos'].fillna(0).astype(int)
+    df_openings['DateOnly'] = df_openings['Date'].dt.date
+    print(df_openings)
+
+    #
+    #
+    #Printando o gráfico
+    col1, col2 = st.columns([8,2])
+    col1.line_chart(
+    df_openings,x='Date', y=["aberturas", "fechamentos"], color=["#0033CC", "#CC3333"])
+    cont_aberturas=df_openings['aberturas'].sum()
+    cont_fechamentos=df_openings['fechamentos'].sum()
+    col2.metric('Abertos no período', cont_aberturas, "Protocolos")
+    col2.metric('Fechados no período', cont_fechamentos, "-Protocolos")
+
+
+    #Encerramento do gráfico de linhas
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
 
 
 
@@ -65,7 +181,7 @@ if Arquivo:
     #Metrica de protocolos em atendimento no momento
     df_Em_Atendimento = df[(df['SITUAÇÃO'] == 'Em Atendimento')]
     count_em_atendimento = df_Em_Atendimento.shape[0]
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3 = st.columns(3)
     col1.metric("Protocolos Em Atendimento", count_em_atendimento, 'Abertos no momento')
 
     #
@@ -80,13 +196,32 @@ if Arquivo:
     #
     #
     #Aqui se inicia a média de tempo de fila hoje
-    media = df_hoje['TEMPO DE FILA'].mean()
-    media_format = pd.Timedelta(media)
+    # media = df_hoje['TEMPO DE FILA'].mean()
+    # media_format = pd.Timedelta(media)
+    # hours = media_format.components.hours
+    # minutes = media_format.components.minutes
+    # seconds = media_format.components.seconds
+    # formatted_time = f'{hours}h{minutes}m{seconds}s'
+    def check_fila_hoje():
+        if protocolos_hoje == True:
+            media = df_hoje['TEMPO DE FILA'].mean()
+            media_format = pd.Timedelta(media)
+            hours = media_format.components.hours
+            minutes = media_format.components.minutes
+            seconds = media_format.components.seconds
+            formatted_time = f'{hours}h{minutes}m{seconds}s'
+            return formatted_time
+        else:
+            return 0
+        
+    media_tempo_fila_hoje=df_hoje['TEMPO DE FILA'].mean()
+    media_format = pd.Timedelta(media_tempo_fila_hoje)
     hours = media_format.components.hours
     minutes = media_format.components.minutes
     seconds = media_format.components.seconds
-    formatted_time = f'{hours}h{minutes}m{seconds}s'
-    col3.metric("Tempo médio de fila hoje", formatted_time, 'Iniciados hoje', delta_color='off')
+    formatted_tempo_fila_hoje = f'{hours}h{minutes}m{seconds}s'
+
+    col3.metric("Tempo médio de fila hoje", formatted_tempo_fila_hoje, 'Iniciados hoje', delta_color='off')
 
     #
     #
@@ -94,7 +229,34 @@ if Arquivo:
     #Aqui inicia-se a contagem de protocolos aguardando
     aguardando = df['SITUAÇÃO'][df['SITUAÇÃO'] == 'Aguardando Atendimento'].count()
     aguardando
-    col4.metric("Protocolos na fila", aguardando, 'Aguardando Atendimento', delta_color="inverse")
+    col1.metric("Protocolos na fila", aguardando, 'Aguardando Atendimento', delta_color="inverse")
+
+
+    #
+    #
+    #
+    #Aqui inicia-se a apuração do tempo médio de duração de todos os protocolos
+    df_fechados = df_fechamento[df_fechamento['SITUAÇÃO'] == 'Encerrado']
+    tempo_medio = df_fechados['DURAÇÃO H:M:S'].mean()
+    tempo_medio_format = pd.Timedelta(tempo_medio)
+    hours = tempo_medio_format.components.hours
+    minutes = tempo_medio_format.components.minutes
+    seconds = tempo_medio_format.components.seconds
+    tempo_medio_formatado = f'{hours}h{minutes}m{seconds}s'
+    col2.metric('Tempo médio resolução', tempo_medio_formatado, 'Prot. encerrados' ,delta_color="inverse")
+
+    #
+    #
+    #
+    #Aqui inicia-se a apuração do tempo médio de duração de todos os protocolos abertos
+    now = datetime.now()
+    df_Em_Atendimento['DURAÇÃO H:M:S'] = (now - df_Em_Atendimento['ABERTURA'])
+    tempo_medio_format = df_Em_Atendimento['DURAÇÃO H:M:S'].mean()
+    hours = tempo_medio_format.components.hours
+    minutes = tempo_medio_format.components.minutes
+    seconds = tempo_medio_format.components.seconds
+    tempo_medio_formatado = f'{hours}h{minutes}m{seconds}s'
+    col3.metric('Duração Atendimento', tempo_medio_formatado, 'Prot. em atendimento' ,delta_color="inverse")
 
 
 
@@ -136,50 +298,74 @@ if Arquivo:
 
 
 
+
+
+    #
+    #
+    #
+    #
+    #Aqui vou inserir o df dos atendimentos mais demorados
+    df_em_at = df_Em_Atendimento[['PROTOCOLO', 'ATENDENTE', 'CANAL', 'CONTATO', 'DURAÇÃO H:M:S']]
+
+    st.header('Atendimentos mais antigos ainda não encerrados')
+
+    st.dataframe(df_em_at.head(32), hide_index=True)
+
+
+
+
+
+
     # 
     #
     #
-    # Aqui se inicia a parte de protocolos abertos por dias com o elemento slider
-    st.header('Protocolos abertos por dia')
-    df_data = df.groupby(['DATA'], observed=False)['PROTOCOLO'].count()
-    df_data = df_data.to_frame()
-    df_data = df_data.rename(columns = {'PROTOCOLO': 'PROTOCOLOS ABERTOS'})
+    # # Aqui se inicia a parte de protocolos abertos por dias com o elemento slider
+    # st.header('Protocolos abertos por dia')
+    # df_data = df.groupby(['DATA'], observed=False)['PROTOCOLO'].count()
+    # df_data = df_data.to_frame()
+    # df_data = df_data.rename(columns = {'PROTOCOLO': 'PROTOCOLOS ABERTOS'})
 
-    df_data.reset_index(inplace=True)
-    df_data['DATA'] = pd.to_datetime(df_data['DATA'])
+    # df_data.reset_index(inplace=True)
+    # df_data['DATA'] = pd.to_datetime(df_data['DATA'])
 
-    # Extract the date part (this returns a Series of datetime.date objects)
-    df_data['DATE_ONLY'] = df_data['DATA'].dt.date
+    # # Extract the date part (this returns a Series of datetime.date objects)
+    # df_data['DATE_ONLY'] = df_data['DATA'].dt.date
 
-    # Set 'DATE_ONLY' column as the index
-    df_data.set_index('DATE_ONLY', inplace=True)
+    # # Set 'DATE_ONLY' column as the index
+    # df_data.set_index('DATE_ONLY', inplace=True)
 
-    # Optionally, drop the original 'DATA' column
-    df_data.drop('DATA', axis=1, inplace=True)
+    # # Optionally, drop the original 'DATA' column
+    # df_data.drop('DATA', axis=1, inplace=True)
 
-    # Print the DataFrame
-    print(df_data)
-    start_date, end_date = st.select_slider(
-        "Selecione o range do período",
-        options=df_data.index,
-        value=(df_data.index[0], df_data.index[-1]))#,
-        #format='MM/DD/YYYY')
-    #df_data_sliced = df_data.loc[start_date, end_date]
-    st.bar_chart(df_data)
-    #st.bar_chart(df_data_sliced)
-    #st.bar_chart(df_data_sliced)
+    # # Print the DataFrame
+    # print(df_data)
+    # start_date, end_date = st.select_slider(
+    #     "Selecione o range do período",
+    #     options=df_data.index,
+    #     value=(df_data.index[0], df_data.index[-1]))#,
+    #     #format='MM/DD/YYYY')
+    # #df_data_sliced = df_data.loc[start_date, end_date]
+    # st.bar_chart(df_data)
+    # #st.bar_chart(df_data_sliced)
+    # #st.bar_chart(df_data_sliced)
 
-    # Create a datetime slider with custom format and options
-    start_date = datetime(2020, 1, 1)
-    end_date = start_date + timedelta(weeks=1)
+    # # Create a datetime slider with custom format and options
+    # start_date = datetime(2020, 1, 1)
+    # end_date = start_date + timedelta(weeks=1)
     
-    # selected_date = st.slider(
-    #     "Select a date range",
-    #     min_value=start_date,
-    #     max_value=end_date,
-    #     value=(start_date, end_date),
-    #     step=timedelta(days=1),
-    #     format="MM/DD/YYYY",
-    #     options=["Day", "Week", "Month", "Year"]
-    # )
+    # # selected_date = st.slider(
+    # #     "Select a date range",
+    # #     min_value=start_date,
+    # #     max_value=end_date,
+    # #     value=(start_date, end_date),
+    # #     step=timedelta(days=1),
+    # #     format="MM/DD/YYYY",
+    # #     options=["Day", "Week", "Month", "Year"]
+    # # )
+
+
+    
+
+
+    
 
