@@ -313,57 +313,6 @@ if Arquivo:
 
 
 
-
-
-
-    # 
-    #
-    #
-    # # Aqui se inicia a parte de protocolos abertos por dias com o elemento slider
-    # st.header('Protocolos abertos por dia')
-    # df_data = df.groupby(['DATA'], observed=False)['PROTOCOLO'].count()
-    # df_data = df_data.to_frame()
-    # df_data = df_data.rename(columns = {'PROTOCOLO': 'PROTOCOLOS ABERTOS'})
-
-    # df_data.reset_index(inplace=True)
-    # df_data['DATA'] = pd.to_datetime(df_data['DATA'])
-
-    # # Extract the date part (this returns a Series of datetime.date objects)
-    # df_data['DATE_ONLY'] = df_data['DATA'].dt.date
-
-    # # Set 'DATE_ONLY' column as the index
-    # df_data.set_index('DATE_ONLY', inplace=True)
-
-    # # Optionally, drop the original 'DATA' column
-    # df_data.drop('DATA', axis=1, inplace=True)
-
-    # # Print the DataFrame
-    # print(df_data)
-    # start_date, end_date = st.select_slider(
-    #     "Selecione o range do período",
-    #     options=df_data.index,
-    #     value=(df_data.index[0], df_data.index[-1]))#,
-    #     #format='MM/DD/YYYY')
-    # #df_data_sliced = df_data.loc[start_date, end_date]
-    # st.bar_chart(df_data)
-    # #st.bar_chart(df_data_sliced)
-    # #st.bar_chart(df_data_sliced)
-
-    # # Create a datetime slider with custom format and options
-    # start_date = datetime(2020, 1, 1)
-    # end_date = start_date + timedelta(weeks=1)
-    
-    # # selected_date = st.slider(
-    # #     "Select a date range",
-    # #     min_value=start_date,
-    # #     max_value=end_date,
-    # #     value=(start_date, end_date),
-    # #     step=timedelta(days=1),
-    # #     format="MM/DD/YYYY",
-    # #     options=["Day", "Week", "Month", "Year"]
-    # # )
-
-
     
 
 
