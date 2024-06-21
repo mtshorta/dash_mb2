@@ -75,7 +75,7 @@ if Arquivo:
     #Pego o a menor e maior data do df_fechamento, que nada mais é que o df normal mais uma coluna de data de fechamento 
     # E outra coluna de data e hora de fechamento dos protocolos
     #Criando a data de fechamento
-    st.subheader('Número de protocolos abertos e fechados no período')
+    st.subheader('Protocolos abertos e fechados no período')
     df_fechamento = df
     #
     #Calculando a data do fechamento
@@ -217,7 +217,7 @@ if Arquivo:
         minutes = media_format.components.minutes
         seconds = media_format.components.seconds
 
-    formatted_time = f'{hours}:{minutes}:{seconds}'
+    formatted_time = f'{hours:02}:{minutes:02}:{seconds:02}'
     
 
     col3.metric("Tempo médio de fila hoje", formatted_time, 'Iniciados hoje', delta_color='off')
@@ -248,7 +248,7 @@ if Arquivo:
         minutes = tempo_medio_format.components.minutes
         seconds = tempo_medio_format.components.seconds
 
-    tempo_medio_formatado = f'{hours}h{minutes}m{seconds}s'
+    tempo_medio_formatado = f'{hours:02}:{minutes:02}:{seconds:02}'
     col2.metric('Tempo médio resolução', tempo_medio_formatado, 'Prot. encerrados' ,delta_color="inverse")
 
     #
@@ -267,7 +267,7 @@ if Arquivo:
         hours = tempo_medio_format.components.hours
         minutes = tempo_medio_format.components.minutes
         seconds = tempo_medio_format.components.seconds
-    tempo_medio_formatado = f'{hours}h{minutes}m{seconds}s'
+    tempo_medio_formatado = f'{hours:02}:{minutes:02}:{seconds:02}'
     col3.metric('Duração Atendimento', tempo_medio_formatado, 'Prot. em atendimento' ,delta_color="inverse")
 
 
