@@ -34,10 +34,12 @@ if Arquivo:
     df['PROTOCOLO'] = pd.to_numeric(df['PROTOCOLO'], errors = 'coerce')
     df['DATA'] = pd.to_datetime(df['DATA'], format='%d/%m/%Y')
     df['ABERTURA'] = pd.to_datetime(df['ABERTURA'], format='%d/%m/%Y %H:%M:%S')
+    df['1ª MSG ATENDENTE'] = df['1ª MSG ATENDENTE'].replace('---', pd.NaT)
     df['1ª MSG ATENDENTE'] = pd.to_datetime(df['1ª MSG ATENDENTE'], format='%d/%m/%Y %H:%M:%S')
     df['ORIGEM'] = df['ORIGEM'].astype('category')
     df['CANAL'] = df['CANAL'].astype('category')
     df['SETOR'] = df['SETOR'].astype('category')
+    df['ATENDENTE'] = df['ATENDENTE'].replace('---', 'Sem Atendente Atribuido')
     df['ATENDENTE'] = df['ATENDENTE'].astype('category')
     df['CONTATO'] = df['CONTATO'].astype(str)
     #df['INFO. CONTATO'] = df['INFO. CONTATO'].astype(str)
@@ -234,11 +236,18 @@ if Arquivo:
     #
     #Aqui inicia-se a apuração do tempo médio de duração de todos os protocolos
     df_fechados = df_fechamento[df_fechamento['SITUAÇÃO'] == 'Encerrado']
-    tempo_medio = df_fechados['DURAÇÃO H:M:S'].mean()
-    tempo_medio_format = pd.Timedelta(tempo_medio)
-    hours = tempo_medio_format.components.hours
-    minutes = tempo_medio_format.components.minutes
-    seconds = tempo_medio_format.components.seconds
+    tempo_medio_format = df_fechados['DURAÇÃO H:M:S'].mean()
+    if pd.isna(tempo_medio_format):
+        hours = 0
+        minutes = 0
+        seconds = 0
+    else:
+        # Convert mean to Timedelta if it is not NaT
+        tempo_medio_format = pd.Timedelta(tempo_medio_format)
+        hours = tempo_medio_format.components.hours
+        minutes = tempo_medio_format.components.minutes
+        seconds = tempo_medio_format.components.seconds
+
     tempo_medio_formatado = f'{hours}h{minutes}m{seconds}s'
     col2.metric('Tempo médio resolução', tempo_medio_formatado, 'Prot. encerrados' ,delta_color="inverse")
 
