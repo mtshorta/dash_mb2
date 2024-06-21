@@ -258,9 +258,15 @@ if Arquivo:
     now = datetime.now()
     df_Em_Atendimento['DURAÇÃO H:M:S'] = (now - df_Em_Atendimento['ABERTURA'])
     tempo_medio_format = df_Em_Atendimento['DURAÇÃO H:M:S'].mean()
-    hours = tempo_medio_format.components.hours
-    minutes = tempo_medio_format.components.minutes
-    seconds = tempo_medio_format.components.seconds
+    if pd.isna(tempo_medio_format):
+        hours = 0
+        minutes = 0
+        seconds = 0
+    else:
+        # Convert mean to Timedelta if it is not NaT
+        hours = tempo_medio_format.components.hours
+        minutes = tempo_medio_format.components.minutes
+        seconds = tempo_medio_format.components.seconds
     tempo_medio_formatado = f'{hours}h{minutes}m{seconds}s'
     col3.metric('Duração Atendimento', tempo_medio_formatado, 'Prot. em atendimento' ,delta_color="inverse")
 
