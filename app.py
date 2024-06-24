@@ -13,7 +13,7 @@ st.set_page_config(page_title='Dashboard de Atendimento')
 #
 #
 #Upload do arquivo
-Arquivo = st.file_uploader(label = 'Faça o Upload do Relatório de Atendimentos Maxbot. O relatório pode ser obtido acessando sua conta maxbot, no menu lateral clique em "Relatório", em seguida "Atendimento". Selecione o período de referência e gere o relatório')
+Arquivo = st.file_uploader(label = 'Utilize a Dashboard para analisar os atendimentos!  Selecione o período, gere o seu relatório e em seguida salve o arquivo. Depois, clique no botão "Browse files" para localizar e selecionar o relatório baixado e gerar a dashboard completa dos seus atendimentos.')
 #Arquivo = 'Protocolos2024-06-07.xlsx'
 
 st.title('Dashboard Análise de Atendimentos Maxbot 🤖')
