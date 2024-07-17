@@ -294,7 +294,7 @@ if Arquivo:
     #
     #
     #
-    #Aquui se inicia os protocolos em atendimento por atendete.
+    #Aqui se inicia os protocolos em atendimento por atendete.
     st.subheader('Protocolos em atendimento por atendente')
     df_atendentes = df_Em_Atendimento.groupby(['ATENDENTE'], observed=False)['ATENDENTE'].count()
     df_atendentes = df_atendentes.to_frame()
@@ -371,3 +371,16 @@ if Arquivo:
     col2.bar_chart(hour_counts_merged2.set_index('HOUR')) 
     #Ploting results
     # 
+
+
+    #
+    #
+    #
+    #New client demmand Who was the client who requested more help
+    #st.text(df.columns) = ' INFO. CONTATO'
+    contato_counts = df.value_counts(subset=[' INFO. CONTATO','CONTATO']).reset_index(name='# DE CHAMADOS')
+    new_order = ['CONTATO', ' INFO. CONTATO','# DE CHAMADOS']
+    contato_counts = contato_counts[new_order]
+    st.header('Contatos com maior número de protocolos')
+    st.dataframe(contato_counts)
+
