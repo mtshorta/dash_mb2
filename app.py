@@ -35,7 +35,7 @@ if Arquivo:
     df['DATA'] = pd.to_datetime(df['DATA'], format='%d/%m/%Y')
     df['ABERTURA'] = pd.to_datetime(df['ABERTURA'], format='%d/%m/%Y %H:%M:%S')
     df['1ª MSG ATENDENTE'] = df['1ª MSG ATENDENTE'].replace('---', pd.NaT)
-    df['1ª MSG ATENDENTE'] = pd.to_datetime(df['1ª MSG ATENDENTE'], format='%d/%m/%Y %H:%M:%S')
+    df['PRIMEIRA MSG ATENDENTE'] = pd.to_datetime(df['1ª MSG ATENDENTE'], format='%d/%m/%Y %H:%M:%S')
     df['ORIGEM'] = df['ORIGEM'].astype('category')
     df['CANAL'] = df['CANAL'].astype('category')
     df['SETOR'] = df['SETOR'].astype('category')
